@@ -268,7 +268,7 @@ const getUser = async (req, res) => {
     res.json(RESPONSE);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ msg: "Terjadi Masalah pada server", error: true });
+    // res.status(500).json({ msg: "Terjadi Masalah pada server", error: true });
   }
 };
 
