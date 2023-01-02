@@ -157,6 +157,8 @@ const getTrending = async (req, res) => {
 const getUser = async (req, res) => {
   const { userId, count, cursor } = req.query;
   try {
+    if (!userId)
+      return res.json({ msg: "Parameter tidak sesuai!", error: true });
     const getUserInfo = async (userId) => {
       const { data } = await axios({
         url: "https://www.tikwm.com/api/user/info",
@@ -265,7 +267,7 @@ const getUser = async (req, res) => {
     RESPONSE.data = await tempData;
     res.json(RESPONSE);
   } catch (err) {
-    res.status(500).json({ msg: "Terjadi Masalah pada server", error: err });
+    res.status(500).json({ msg: "Terjadi Masalah pada server", error: true });
   }
 };
 
