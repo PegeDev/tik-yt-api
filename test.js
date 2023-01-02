@@ -2,7 +2,7 @@ const Signer = require("tiktok-signature");
 const axios = require("axios");
 const Cheerio = require("cheerio");
 const rp = require("request-promise");
-const { CookieJar } = require("request");
+const request = require("request");
 const TREND_ENDPOINT = "https://m.tiktok.com/api/item_list/";
 const FYP_ENDPOINT = "https://www.tiktok.com/foryou";
 
@@ -112,33 +112,49 @@ const main = async () => {
     // const navigator = await signer.navigator();
     // const cookieJar = rp.jar();
     console.log("Getting Cookies");
-    const getCok = await axios({
-      method: "HEAD",
-      url: "https://www.tiktok.com",
-      withCredentials: true,
-    });
-    console.log("Success getting Cookies");
-    const cookies = getCok.headers["set-cookie"];
-    // await cookies.push(ttCok);
-    const req = await axios({
-      method: "get",
-      url: "https://www.tiktok.com/@nesyaaast",
-      headers: {
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        path: "/@nesyaaast",
-        "Accept-Encoding": "gzip, deflate",
-        "accept-language": "id,en-US;q=0.9,en;q=0.8",
-        Connection: "keep-alive",
-        "user-agent":
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-        Cookie: cookies,
-        Referrer: "https://www.tiktok.com/",
-      },
-      withCredentials: true,
-    });
-    console.log(req);
-    // const html = Cheerio.load(data);
+    const getCok = await request.get(
+      "https://www.tiktok.com",
+      function (err, response, body) {
+        var rawcookies = response.headers["set-cookie"];
+        console.log(rawcookies);
+      }
+    );
+    // const getCok = await axios({
+    //   method: "get",
+    //   url: "https://www.tiktok.com",
+    //   headers: {
+    //     Accept:
+    //       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    //     "Accept-Encoding": "gzip, deflate",
+    //     "accept-language": "id,en-US;q=0.9,en;q=0.8",
+    //     "user-agent":
+    //       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+    //   },
+    // });
+    // const cookies = getCok.headers["set-cookie"];
+    // console.log("Success getting Cookies : ");
+    // cookies.map((res) => {
+    //   console.log(cookies);
+    // });
+    // const req = await axios({
+    //   method: "get",
+    //   url: "https://www.tiktok.com/@nesyaaast?lang=id-ID",
+    //   headers: {
+    //     Accept:
+    //       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    //     path: "/@nesyaaast",
+    //     "Accept-Encoding": "gzip, deflate",
+    //     "accept-language": "id,en-US;q=0.9,en;q=0.8",
+    //     Connection: "keep-alive",
+    //     "user-agent":
+    //       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+    //     Cookie: cookies,
+    //     Referrer: "https://www.tiktok.com/",
+    //   },
+    //   withCredentials: true,
+    // });
+    // const $ = Cheerio.load(req.data);
+    // console.log(req.data);
   } catch (err) {
     console.log(err);
   }
