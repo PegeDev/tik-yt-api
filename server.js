@@ -30,9 +30,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(async (req, res) => {
-  res.json({ error: false, msg: "Hello World" });
-});
+// app.use(async (req, res) => {
+//   res.json({ error: false, msg: "Hello World" });
+// });
 app.use(AuthRoute);
 app.use(TiktokRoute);
 app.use(YoutubeRoute);

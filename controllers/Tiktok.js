@@ -47,6 +47,9 @@ const RESPONSE = {
   message: "",
   hasMore: "",
   cursor: "",
+  userInfo: {
+    stats: {},
+  },
   data: [],
 };
 
@@ -80,7 +83,6 @@ const main = async (cursor, count) => {
     const { data } = await axios({
       url: signature.signed_url,
       method: "get",
-
       headers: {
         Cookie: getCok.headers["set-cookie"],
         // ttwid: ttwid,
@@ -155,7 +157,7 @@ const getTrending = async (req, res) => {
 const getUser = async (req, res) => {
   const { userId, count, cursor } = req.query;
   try {
-    const getUserID = async (userId) => {
+    const getUserInfo = async (userId) => {
       const { data } = await axios({
         url: "https://www.tikwm.com/api/user/info",
         method: "GET",
@@ -167,8 +169,9 @@ const getUser = async (req, res) => {
           "Accept-Encoding": "*",
         },
       });
-      return data.data.user.id;
+      return data.data;
     };
+    const dataUsers = await getUserInfo(userId);
     const unsigned = "https://www.tiktok.com/api/item_list/";
     const USERS_QUERY = {
       aid: 1988,
@@ -178,7 +181,7 @@ const getUser = async (req, res) => {
       cookie_enabled: true,
       did: "",
       count: count,
-      id: await getUserID(userId),
+      id: dataUsers.user.id,
       type: 1,
       secUid: SEC_UID,
       maxCursor: cursor,
@@ -215,6 +218,8 @@ const getUser = async (req, res) => {
     });
     if (data.status_code !== 0) return console.log("Server Error");
     // const date = new Date();
+    RESPONSE.userInfo = await dataUsers.user;
+    RESPONSE.userInfo.stats = await dataUsers.stats;
     RESPONSE.message = "Successfully get items";
     RESPONSE.error = false;
     RESPONSE.hasMore = data.hasMore;
