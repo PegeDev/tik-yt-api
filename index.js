@@ -9,6 +9,7 @@ const TiktokRoute = require("./routes/TiktokRoute");
 // const YoutubeRoute = require("./routes/YoutubeRoute");
 const DownloadRoute = require("./routes/DownloadRoute");
 const passport = require("passport");
+const router = require("./routes/AuthRoute");
 const PORT = 5000;
 const app = express();
 app.use(express.json());
@@ -30,9 +31,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", async (req, res) => {
-  res.json({ error: false, msg: "Hello World" });
-});
+app.use(
+  router.get("/", async (req, res) => {
+    res.json({ error: false, msg: "Hello World" });
+  })
+);
 app.use(AuthRoute);
 app.use(TiktokRoute);
 // app.use(YoutubeRoute);
