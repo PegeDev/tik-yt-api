@@ -3,7 +3,6 @@ const path = require("path");
 const axios = require("axios");
 const textToImage = require("text-to-image");
 const base64img = require("base64-img");
-const ffmpeg = require("ffmpeg");
 const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 // const Buffer = require('buffer')
