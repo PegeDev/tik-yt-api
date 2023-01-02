@@ -35,7 +35,7 @@ app.use("/", async (req, res) => {
 });
 app.use(AuthRoute);
 app.use(TiktokRoute);
-app.use(YoutubeRoute);
+// app.use(YoutubeRoute);
 app.use(DownloadRoute);
 
 app.listen(PORT, () => {
