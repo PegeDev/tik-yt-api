@@ -1,7 +1,16 @@
 const { createCipheriv } = require("crypto");
-const { devices, chromium } = require("playwright-chromium");
+// const { devices, chromium } = require("playwright-chromium");
+const chromium = require("playwright-aws-lambda");
 const Utils = require("./utils");
-const iPhone11 = devices["iPhone 11 Pro"];
+const iPhone11 = {
+  userAgent:
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1",
+  viewport: { width: 375, height: 812 },
+  deviceScaleFactor: 3,
+  isMobile: true,
+  hasTouch: true,
+  defaultBrowserType: "webkit",
+};
 class Signer {
   userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
@@ -43,7 +52,7 @@ class Signer {
 
   async init() {
     if (!this.browser) {
-      this.browser = await chromium.launch(this.options);
+      this.browser = await chromium.launchChromium(this.options);
     }
 
     let emulateTemplate = {
@@ -122,7 +131,6 @@ class Signer {
     let queryString = new URL(signed_url).searchParams.toString();
     let bogus = await this.page.evaluate(`generateBogus("${queryString}")`);
     signed_url += "&X-Bogus=" + bogus;
-
 
     return {
       signature: token,
