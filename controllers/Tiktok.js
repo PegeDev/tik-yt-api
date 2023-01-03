@@ -3,7 +3,7 @@ const axios = require("axios");
 const fs = require("fs");
 const storeTrend = require("../public/data.json");
 const path = require("path");
-const Signer = require("tiktok-signature");
+const Signer = require("../tiktok-signature/index");
 
 const TREND_ENDPOINT = "https://www.tiktok.com/api/item_list/";
 const SEC_UID =
@@ -53,15 +53,17 @@ const RESPONSE = {
   data: [],
 };
 
-const getUrlNoWm = async (videoKey) => {
-  const response = await axios({
-    url: `https://api16-normal-useast5.us.tiktokv.com/aweme/v1/aweme/detail/?aweme_id=${videoKey}&improve_bitrate=1&mediaType=4`,
+const getUrlNoWm = async (videoKey, cookies) => {
+  const { data } = await axios({
+    url: `https://tiktokv.com/aweme/v1/feed/?aweme_id=${videoKey}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept-Encoding": "*",
+      Cookie: cookies,
     },
   });
-  return response.data.aweme_detail.video.play_addr.url_list[0];
+  console.log(data);
+  return data.aweme_list[0].video.play_addr.url_list[0];
 };
 
 const main = async (cursor, count) => {
@@ -93,6 +95,8 @@ const main = async (cursor, count) => {
       },
       withCredentials: true,
     });
+    console.log(data);
+
     if (data.status_code !== 0) return console.log("Server Error");
     // const date = new Date();
     RESPONSE.message = "Successfully get items";
@@ -102,7 +106,7 @@ const main = async (cursor, count) => {
     RESPONSE.date = Date.now();
     const tempData = [];
     for (let res of data.items) {
-      const getUrl = await getUrlNoWm(res.video.id);
+      // const getUrl = await getUrlNoWm(res.video.id);
       await tempData.push({
         video_id: res.video.id,
         region: "ID",
@@ -110,7 +114,7 @@ const main = async (cursor, count) => {
         cover: res.video.dynamicCover,
         origin_cover: res.video.cover,
         duration: res.video.duration,
-        play: getUrl,
+        // play: getUrl,
         music_info: {
           id: res.music.id,
           title: res.music.title,
@@ -204,7 +208,7 @@ const getUser = async (req, res) => {
 
     // GET COOKIES FROM FYP PAGE
     const getCok = await axios.head(FYP_ENDPOINT, { withCredentials: true });
-    const { data } = await axios({
+    const { data, headers } = await axios({
       url: signature.signed_url,
       method: "get",
 
@@ -227,10 +231,11 @@ const getUser = async (req, res) => {
     RESPONSE.hasMore = data.hasMore;
     RESPONSE.cursor = data.maxCursor;
     RESPONSE.date = Date.now();
+    const cookies = getCok.headers["set-cookie"];
     const tempData = [];
     if (data.items) {
       for (let res of data.items) {
-        const getUrl = await getUrlNoWm(res.video.id);
+        const getUrl = await getUrlNoWm(res.video.id, cookies);
         await tempData.push({
           video_id: res.video.id,
           region: "ID",
