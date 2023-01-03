@@ -62,7 +62,6 @@ const getUrlNoWm = async (videoKey, cookies) => {
       Cookie: cookies,
     },
   });
-  console.log(data);
   return data.aweme_list[0].video.play_addr.url_list[0];
 };
 
@@ -106,7 +105,7 @@ const main = async (cursor, count) => {
     RESPONSE.date = Date.now();
     const tempData = [];
     for (let res of data.items) {
-      // const getUrl = await getUrlNoWm(res.video.id);
+      const getUrl = await getUrlNoWm(res.video.id);
       await tempData.push({
         video_id: res.video.id,
         region: "ID",
@@ -114,7 +113,7 @@ const main = async (cursor, count) => {
         cover: res.video.dynamicCover,
         origin_cover: res.video.cover,
         duration: res.video.duration,
-        // play: getUrl,
+        play: getUrl,
         music_info: {
           id: res.music.id,
           title: res.music.title,
